@@ -1,12 +1,46 @@
-# train_agent_a.py
+import os
+import sys
 
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+import wandb
 from stable_baselines3 import PPO
-from ..environement.env import Affrontement
-from stable_baselines3.common.env_checker import check_env
+from stable_baselines3.common.monitor import Monitor
+from wandb.integration.sb3 import WandbCallback
+from stable_baselines3.common.env_util import make_vec_env
 
-env = Affrontement()
-check_env(env)  
+from environement.env import Affrontement
+from environement.env_eviteur import AffrontementSingleAgent
 
-model = PPO("MlpPolicy", env, verbose=1)
-model.learn(total_timesteps=100_000)
-model.save("../mpdels/ppo_eviteur")
+# Initialisation de wandb
+wandb.init(
+    project="affrontement-ppo",
+    name="ppo_eviteur",
+    config={
+        "policy_type": "MlpPolicy",
+        "total_timesteps": 200_000,
+        "agent": "eviteur"
+    },
+    sync_tensorboard=True,
+    monitor_gym=True,
+    save_code=True,
+)
+
+# Environnement (avec Monitor pour wandb)
+env_raw = Affrontement()
+env_wrapped = AffrontementSingleAgent(env_raw, agent_id="eviteur")
+env_monitored = Monitor(env_wrapped)
+
+# PPO + wandb callback
+model = PPO("MlpPolicy", env_monitored, verbose=1, tensorboard_log="./ppo_tensorboard")
+
+model.learn(
+    total_timesteps=200_000,
+    callback=WandbCallback(
+        gradient_save_freq=100,
+        model_save_path="models/",
+        verbose=2
+    )
+)
