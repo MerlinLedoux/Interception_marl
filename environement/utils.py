@@ -13,3 +13,8 @@ def angle_entre_cap_and_enemy(player_pos, enemy_pos, player_heading_deg):
     angle_to_enemy = np.degrees(np.arctan2(dy, dx))
     angle = (angle_to_enemy - player_heading_deg) % 360
     return angle
+
+def red_dist(distance):
+    distance = distance/100
+    distance = 10 if distance > 10 else distance
+    return distance

@@ -2,6 +2,7 @@ import numpy as np
 import math
 
 def move(x, y, cap, vit, ax, ay, max_speed):
+    cap = np.radians(cap)
 
     ax = ax if vit + ax >= 0.1 else vit - 0.1
     
@@ -17,4 +18,4 @@ def move(x, y, cap, vit, ax, ay, max_speed):
     new_y = y + np.sin(new_cap) * new_vit
     new_cap = (new_cap + 2*np.pi) % (2*np.pi)
     
-    return(new_x, new_y, new_cap, new_vit)
+    return(new_x, new_y, np.degrees(new_cap), new_vit)
