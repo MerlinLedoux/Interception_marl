@@ -1,0 +1,12 @@
+# train_agent_a.py
+
+from stable_baselines3 import PPO
+from ..environement.env import Affrontement
+from stable_baselines3.common.env_checker import check_env
+
+env = Affrontement()
+check_env(env)  
+
+model = PPO("MlpPolicy", env, verbose=1)
+model.learn(total_timesteps=100_000)
+model.save("../mpdels/ppo_eviteur")
