@@ -51,6 +51,7 @@ venv.bak/
 .env*.local
 wandb/
 runs/
+ppo_tensorboard/
 
 
 # IDE

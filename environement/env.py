@@ -2,7 +2,7 @@ import gymnasium as gym
 from gymnasium import spaces
 import numpy as np 
 import utils
-from deplacement import move
+import deplacement
 
 class Affrontement(gym.Env):
     metadata = {"render_modes": ["human"], "render_fps": 10}
@@ -10,7 +10,7 @@ class Affrontement(gym.Env):
     def __init__(self, render_mode = None):
         super().__init__()
         self.render_mode = render_mode
-        self.max_step = 500
+        self.max_step = 200
 
         self.observation_space = spaces.Dict({
             "eviteur" : spaces.Box(low=np.array([0, 0, 0, 0, 0, 0, 0, 0], dtype=np.float32),
@@ -27,6 +27,7 @@ class Affrontement(gym.Env):
         self.reset()
 
     def reset(self, seed=None, options=None):
+        super().reset(seed=seed)
         self.pos_objectif = np.random.uniform(600 , 1000, 2)
         self.pos_eviteur = np.random.uniform(0 , 200, 2)
         self.traj_eviteur = [5, utils.comp_cap(self.pos_eviteur, self.pos_objectif)]
@@ -62,22 +63,26 @@ class Affrontement(gym.Env):
 
     def step(self, action_dict):
         self.current_step +=1
-        
+        # print(self.current_step)
+
         # Memoire
         dist_evit_obj_mem = np.linalg.norm(self.pos_eviteur - self.pos_objectif)
         dist_cha_evit_mem = np.linalg.norm(self.pos_chasseur - self.pos_eviteur)
 
         # Déplacement des navire 
-        nxe, nye, nce, nve = move(self.pos_eviteur[0], self.pos_eviteur[1], self.traj_eviteur[0], self.traj_eviteur[1], action_dict["eviteur"][0], action_dict["eviteur"][1], 10)
-        nxc, nyc, ncc, nvc = move(self.pos_chasseur[0], self.pos_chasseur[1], self.traj_chasseur[0], self.traj_chasseur[1], action_dict["chasseur"][0], action_dict["chasseur"][1], 10)
+        action_dict["eviteur"] = np.clip(action_dict["eviteur"], -3.0, 3.0)
+        action_dict["chasseur"] = np.clip(action_dict["chasseur"], -3.0, 3.0)
 
-        self.pos_eviteur = nxe, nye
-        self.traj_eviteur = nve, nce 
-        self.pos_chasseur = nxc, nyc
-        self.traj_chasseur = nvc, ncc
+        nxe, nye, nce, nve = deplacement.move(self.pos_eviteur[0], self.pos_eviteur[1], self.traj_eviteur[1], self.traj_eviteur[0], action_dict["eviteur"][0], action_dict["eviteur"][1], 10)
+        nxc, nyc, ncc, nvc = deplacement.move(self.pos_chasseur[0], self.pos_chasseur[1], self.traj_chasseur[1], self.traj_chasseur[0], action_dict["chasseur"][0], action_dict["chasseur"][1], 10)
+
+        self.pos_eviteur = np.array([nxe, nye])
+        self.traj_eviteur = np.array([nve, nce])
+        self.pos_chasseur = np.array([nxc, nyc])
+        self.traj_chasseur = np.array([nvc, ncc])
 
         # Check nombre de step
-        if self.current_step >= self.max_steps:
+        if self.current_step >= self.max_step:
             truncated = {"eviteur": True, "chasseur": True}
             terminated = {"eviteur": False, "chasseur": False}
             rewards = {"eviteur": 0, "chasseur": 0}
@@ -96,6 +101,8 @@ class Affrontement(gym.Env):
                 terminated = {"eviteur": False, "chasseur": False}
                 dist_evit_obj_new = np.linalg.norm(self.pos_eviteur - self.pos_objectif)
                 dist_cha_evit_new = np.linalg.norm(self.pos_chasseur - self.pos_eviteur)
+                # print(self.pos_eviteur, self.pos_objectif, self.pos_chasseur)
+                # print(f"dist_evit_obj_new : {dist_evit_obj_new}, dist_cha_evit_new : {dist_cha_evit_new}")
                 rewards = {"eviteur": dist_evit_obj_mem - dist_evit_obj_new, "chasseur": dist_cha_evit_mem - dist_cha_evit_new}
        
         obs = self._get_obs()

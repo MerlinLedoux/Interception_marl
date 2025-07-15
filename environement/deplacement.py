@@ -19,3 +19,18 @@ def move(x, y, cap, vit, ax, ay, max_speed):
     new_cap = (new_cap + 2*np.pi) % (2*np.pi)
     
     return(new_x, new_y, np.degrees(new_cap), new_vit)
+
+
+def chasseur_simple(xc, yc, capc, vitc, xe, ye, cape, vite):
+    dx = xe - xc
+    dy = ye - yc
+    dist = np.hypot(dx, dy)
+    
+
+    if dist > 1e-3:
+        target_ax = 1.0 * (dx / dist)  # force vers l'éviteur
+        target_ay = 1.0 * (dy / dist)
+    else:
+        target_ax, target_ay = 0.0, 0.0
+
+    return(np.array([target_ax, target_ay]))
