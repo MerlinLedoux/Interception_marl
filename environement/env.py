@@ -103,7 +103,7 @@ class Affrontement(gym.Env):
                 dist_cha_evit_new = np.linalg.norm(self.pos_chasseur - self.pos_eviteur)
                 # print(self.pos_eviteur, self.pos_objectif, self.pos_chasseur)
                 # print(f"dist_evit_obj_new : {dist_evit_obj_new}, dist_cha_evit_new : {dist_cha_evit_new}")
-                rewards = {"eviteur": dist_evit_obj_mem - dist_evit_obj_new, "chasseur": dist_cha_evit_mem - dist_cha_evit_new}
+                rewards = {"eviteur": (dist_evit_obj_mem - dist_evit_obj_new)/10, "chasseur": (dist_cha_evit_mem - dist_cha_evit_new)/10}
        
         obs = self._get_obs()
         infos = {}

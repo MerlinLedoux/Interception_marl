@@ -1,5 +1,6 @@
 import gymnasium as gym
 import numpy as np
+from deplacement import chasseur_simple, chasseur_moyen
 
 class AffrontementSingleAgent(gym.Wrapper):
     def __init__(self, env, agent_id="eviteur"):
@@ -19,6 +20,9 @@ class AffrontementSingleAgent(gym.Wrapper):
             "eviteur": np.array([0.0, 0.0], dtype=np.float32),
             "chasseur": np.array([0.0, 0.0], dtype=np.float32)
         }
+
+        # action_dict["chasseur"] = chasseur_simple(self.env.pos_chasseur[0], self.env.pos_chasseur[1], self.env.traj_chasseur[1], self.env.pos_eviteur[0], self.env.pos_eviteur[1])
+        action_dict["chasseur"] = chasseur_moyen(self.env.pos_chasseur[0], self.env.pos_chasseur[1], self.env.traj_chasseur[1], self.env.pos_eviteur[0], self.env.pos_eviteur[1], self.env.traj_eviteur[1])
         action_dict[self.agent_id] = action
 
 

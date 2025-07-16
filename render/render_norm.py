@@ -18,12 +18,12 @@ env_single = AffrontementSingleAgent(env_raw, agent_id="eviteur")
 vec_env = DummyVecEnv([lambda: env_single])
 
 # Chargement de la normalisation (adaptée au vecteur d'environnement)
-env = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/models/V3_vecnormalize.pkl", vec_env)
+env = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/models/V5_vecnormalize.pkl", vec_env)
 env.training = False
 env.norm_reward = False
 
 # Chargement du modèle
-path_model = "C:/Users/FX643778/Documents/Git/Interception_marl/models/V3.zip"
+path_model = "C:/Users/FX643778/Documents/Git/Interception_marl/models/V5_chasseur_simple_2.zip"
 model = PPO.load(path_model, env=env)
 
 # Reset initial
@@ -41,9 +41,12 @@ ax.set_ylim(0, 1000)
 ax.set_title("Simulation des agents")
 ax.legend()
 
+reward_total = 0
+
 for _ in range(200):  # nombre de steps à simuler
     action, _ = model.predict(obs, deterministic=True)
     obs, reward, done, info = env.step(action)
+    reward_total += reward
 
     # Récupérer les positions physiques dans env_raw (non normalisées)
     pos_chasseur = np.array(env_raw.pos_chasseur)
@@ -58,7 +61,7 @@ for _ in range(200):  # nombre de steps à simuler
     plt.pause(0.05)
 
     if done:
-        print("Episode terminé.")
+        print(f"Episode terminé le reward total a était : {reward_total[0]}.")
         break
 
 plt.ioff()

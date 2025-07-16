@@ -21,10 +21,10 @@ save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models"
 # Initialisation de wandb
 wandb.init(
     project="affrontement-ppo",
-    name="ppo_eviteur",
+    name="chasseur_moyen",
     config={
         "policy_type": "MlpPolicy",
-        "total_timesteps": 100_000,
+        "total_timesteps": 250_000,
         "agent": "eviteur"
     },
     sync_tensorboard=True,
@@ -43,15 +43,15 @@ vec_env = VecNormalize(vec_env, norm_obs=True, norm_reward=True, clip_obs=10.)
 model = PPO("MlpPolicy", vec_env, verbose=1, tensorboard_log="./ppo_tensorboard")
 
 model.learn(
-    total_timesteps=100_000,
+    total_timesteps=250_000,
     callback=WandbCallback(
         gradient_save_freq=100,
         verbose=2
     )
 )
 
-save_path = os.path.join(save_dir, "V5")
+save_path = os.path.join(save_dir, "V6_chasseur_moyen_2")
 model.save(save_path)
-vec_env.save(os.path.join(save_dir, "V5_vecnormalize.pkl"))
+vec_env.save(os.path.join(save_dir, "V6_vecnormalize.pkl"))
 
 wandb.finish()
