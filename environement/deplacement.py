@@ -65,6 +65,7 @@ def chasseur_moyen(xc, yc, capc, xe, ye, cape):
     yt = ye + dist_int * np.sin(cape_rad)
 
     target_vec = np.array([xt - xc, yt - yc])
+    # print(target_vec)
 
     forward = np.array([np.cos(capc_rad), np.sin(capc_rad)])
     right = np.array([-np.sin(capc_rad), np.cos(capc_rad)])
@@ -74,12 +75,150 @@ def chasseur_moyen(xc, yc, capc, xe, ye, cape):
     
     return np.array([ax, ay])
 
+def chasseur_moyen_2(xc, yc, capc, vitc, xe, ye, cape, vite):
+    capc_rad = np.radians(capc)
+    cape_rad = np.radians(cape)
 
+    dx = xe - xc
+    dy = ye - yc
+    dist = np.sqrt(dx**2 + dy**2)
+
+    teta = angle_entre_cap_et_cible(xe, ye, xc, yc, cape_rad)
+    teta = np.abs(teta)
+    dist_int = (dist * vitc / (vitc + vite)) / max(np.cos(teta), 1e-2)
+
+    xt = xe + dist_int * np.cos(cape_rad)
+    yt = ye + dist_int * np.sin(cape_rad)
+
+    target_vec = np.array([xt - xc, yt - yc])
+    # print(target_vec)
+
+    forward = np.array([np.cos(capc_rad), np.sin(capc_rad)])
+    right = np.array([-np.sin(capc_rad), np.cos(capc_rad)])
+
+    ax = np.clip(np.dot(target_vec, forward), -1.0, 1.0)
+    ay = np.clip(np.dot(target_vec, right), -1.0, 1.0)  
+    
+    return np.array([ax, ay])
+
+def chasseur_moyen_3(xc, yc, capc, vitc, xe, ye, cape, vite):
+    capc_rad = np.radians(capc)
+    cape_rad = np.radians(cape)
+
+    dx = xe - xc
+    dy = ye - yc
+    dist = np.sqrt(dx**2 + dy**2)
+
+    time_est = min(dist / max((vitc + 1e-3), 0.1), 10)
+
+    xt = xe + vite * time_est * np.cos(cape_rad)
+    yt = ye + vite * time_est * np.sin(cape_rad)
+
+    target_vec = np.array([xt - xc, yt - yc])
+    # print(target_vec)
+
+    forward = np.array([np.cos(capc_rad), np.sin(capc_rad)])
+    right = np.array([-np.sin(capc_rad), np.cos(capc_rad)])
+
+    ax = np.clip(np.dot(target_vec, forward), -1.0, 1.0)
+    ay = np.clip(np.dot(target_vec, right), -1.0, 1.0)  
+    
+    return np.array([ax, ay])
+
+def chasseur_hard(xc, yc, capc, vitc, xe, ye, cape, vite):
+    """
+    Calcule le vecteur d'accélération que le chasseur doit adopter pour intercepter l'éviteur 
+    en mouvement, en supposant que tous deux se déplacent à vitesse constante.
+
+    Paramètres :
+    xc, yc : float : Coordonnées (x, y) du chasseur.
+    capc : float : Cap (orientation en degrés) du chasseur.
+    vitc : float : Vitesse du chasseur.
+    xe, ye : float : Coordonnées (x, y) de l'éviteur.
+    cape : float : Cap (orientation en degrés) de l'éviteur.
+    vite : float : Vitesse de l'éviteur.
+
+    Description :
+    La fonction comporte deux phases :
+
+    1. Calcul du point d'interception :
+        - On suppose que les deux agents se déplacent en ligne droite à vitesse constante.
+        - On résout une équation quadratique pour déterminer le moment t où le chasseur 
+          peut atteindre l'éviteur s'ils maintiennent leur direction et vitesse.
+        - Le point d'interception (xt, yt) est calculé à partir de ce temps t.
+
+    2. Calcul de l'accélération :
+        - Le vecteur entre le chasseur et le point d’interception est projeté dans 
+          le repère local du chasseur (défini par son cap).
+        - Les composantes ax et ay représentent alors les directions vers lesquelles 
+          le chasseur doit accélérer (avant et latéral) pour se diriger vers ce point.
+    """
+    theta_e = np.radians(cape)
+    theta_c = np.radians(capc)
+    dx = xe - xc
+    dy = ye - yc
+    d = np.array([dx, dy])
+    v = vite * np.array([np.cos(theta_e), np.sin(theta_e)])
+
+    # Résolution de l'équation quadratique : A·t² + B·t + C = 0
+    A = np.dot(v, v) - vitc**2
+    B = 2 * np.dot(d, v)
+    C = np.dot(d, d)
+
+    delta = B**2 - 4*A*C
+    if delta < 0:
+        print("il y a un probleme, j'ai un delta négatif")
+        return None
+
+    t1 = (-B - np.sqrt(delta)) / (2*A)
+    t2 = (-B + np.sqrt(delta)) / (2*A)
+    t_candidates = [t for t in (t1, t2) if t > 0]
+    if not t_candidates:
+        return None
+    t = min(t_candidates)
+
+    # Calcul du point d'interception visé
+    xt = xe + v[0] * t
+    yt = ye + v[1] * t 
+    target_vec = np.array([xt, yt]) # Vecteur du chasseur vers le point d’interception
+
+    # Repère local du chasseur
+    forward = np.array([np.cos(theta_c), np.sin(theta_c)])
+    right = np.array([-np.sin(theta_c), np.cos(theta_c)])
+
+    # Projection du vecteur vers la cible dans le repère du chasseur
+    ax = np.clip(np.dot(target_vec, forward), -1.0, 1.0)
+    ay = np.clip(np.dot(target_vec, right), -1.0, 1.0)  
+    
+    return np.array([ax, ay])
 
 
 #----------------Zone de test----------------#
 
-xc, yc, capc = 300, 100, 180 
-xe, ye, cape = 100, 100, 45
 
-chasseur_moyen(xc, yc, capc, xe, ye, cape)
+print("Test 1 : Même direction, éviteur droit devant")
+res1 = chasseur_hard(
+    xc=0, yc=0, capc=0, vitc=1.0,   # chasseur au centre, cap 0°
+    xe=10, ye=0, cape=180, vite=1.0 # éviteur droit devant à 10m, vient vers le chasseur
+)
+print("Résultat :", res1)
+
+# Cas 2 : éviteur qui fuit en diagonale, chasseur orienté vers le nord
+print("\nTest 2 : Éviteur en fuite, diagonale")
+res2 = chasseur_hard(
+    xc=0, yc=0, capc=90, vitc=1.5,     # chasseur cap vers le nord
+    xe=5, ye=5, cape=45, vite=1.0      # éviteur s'éloigne en diagonale (nord-est)
+)
+print("Résultat :", res2)
+
+# Cas 3 : éviteur plus rapide que le chasseur — interception impossible
+print("\nTest 3 : Éviteur plus rapide")
+res3 = chasseur_hard(
+    xc=0, yc=0, capc=0, vitc=1.0,    # chasseur cap 0°
+    xe=5, ye=0, cape=0, vite=2.0     # éviteur devant, fuyant plus vite que chasseur
+)
+print("Résultat :", res3)
+
+
+
+# Probleme a corriger pour demain

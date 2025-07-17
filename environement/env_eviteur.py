@@ -1,6 +1,6 @@
 import gymnasium as gym
 import numpy as np
-from deplacement import chasseur_simple, chasseur_moyen
+from deplacement import chasseur_simple, chasseur_moyen, chasseur_moyen_2, chasseur_moyen_3
 
 class AffrontementSingleAgent(gym.Wrapper):
     def __init__(self, env, agent_id="eviteur"):
@@ -21,10 +21,22 @@ class AffrontementSingleAgent(gym.Wrapper):
             "chasseur": np.array([0.0, 0.0], dtype=np.float32)
         }
 
-        # action_dict["chasseur"] = chasseur_simple(self.env.pos_chasseur[0], self.env.pos_chasseur[1], self.env.traj_chasseur[1], self.env.pos_eviteur[0], self.env.pos_eviteur[1])
-        action_dict["chasseur"] = chasseur_moyen(self.env.pos_chasseur[0], self.env.pos_chasseur[1], self.env.traj_chasseur[1], self.env.pos_eviteur[0], self.env.pos_eviteur[1], self.env.traj_eviteur[1])
-        action_dict[self.agent_id] = action
+        comportement = self.env.id % 100
+        comportement = comportement // 25
+        comportement = 3
+        # print(comportement)
 
+        match comportement:
+            case 0:
+                action_dict["chasseur"] = chasseur_simple(self.env.pos_chasseur[0], self.env.pos_chasseur[1], self.env.traj_chasseur[1], self.env.pos_eviteur[0], self.env.pos_eviteur[1])
+            case 1:
+                action_dict["chasseur"] = chasseur_moyen(self.env.pos_chasseur[0], self.env.pos_chasseur[1], self.env.traj_chasseur[1], self.env.pos_eviteur[0], self.env.pos_eviteur[1], self.env.traj_eviteur[1])
+            case 2 :
+                action_dict["chasseur"] = chasseur_moyen_2(self.env.pos_chasseur[0], self.env.pos_chasseur[1], self.env.traj_chasseur[1], self.env.traj_chasseur[0], self.env.pos_eviteur[0], self.env.pos_eviteur[1], self.env.traj_eviteur[1], self.env.traj_eviteur[0])
+            case 3:
+                action_dict["chasseur"] = chasseur_moyen_3(self.env.pos_chasseur[0], self.env.pos_chasseur[1], self.env.traj_chasseur[1], self.env.traj_chasseur[0], self.env.pos_eviteur[0], self.env.pos_eviteur[1], self.env.traj_eviteur[1], self.env.traj_eviteur[0])
+           
+        action_dict[self.agent_id] = action
 
         obs, reward, terminated, truncated, info = self.env.step(action_dict)
         return (

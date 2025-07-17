@@ -18,16 +18,17 @@ env_single = AffrontementSingleAgent(env_raw, agent_id="eviteur")
 vec_env = DummyVecEnv([lambda: env_single])
 
 # Chargement de la normalisation (adaptée au vecteur d'environnement)
-env = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/models/V5_vecnormalize.pkl", vec_env)
-env.training = False
+env = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/models/V10_3_long_vecnormalize.pkl", vec_env)
+env.training = False    
 env.norm_reward = False
 
 # Chargement du modèle
-path_model = "C:/Users/FX643778/Documents/Git/Interception_marl/models/V5_chasseur_simple_2.zip"
+path_model = "C:/Users/FX643778/Documents/Git/Interception_marl/models/V10_3_long_entropy.zip"
 model = PPO.load(path_model, env=env)
 
 # Reset initial
 obs = env.reset()
+
 
 # Initialisation de l'affichage avec matplotlib
 plt.ion()
@@ -43,7 +44,7 @@ ax.legend()
 
 reward_total = 0
 
-for _ in range(200):  # nombre de steps à simuler
+for i in range(200):  # nombre de steps à simuler
     action, _ = model.predict(obs, deterministic=True)
     obs, reward, done, info = env.step(action)
     reward_total += reward
@@ -61,7 +62,7 @@ for _ in range(200):  # nombre de steps à simuler
     plt.pause(0.05)
 
     if done:
-        print(f"Episode terminé le reward total a était : {reward_total[0]}.")
+        print(f"Episode terminé en {i} step, le reward total a était : {reward_total[0]}.")
         break
 
 plt.ioff()
