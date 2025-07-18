@@ -101,12 +101,13 @@ class Affrontement(gym.Env):
                 rewards = {"eviteur": -100, "chasseur": 100}
 
             else:
+                proche = 5 if np.linalg.norm(self.pos_chasseur - self.pos_eviteur) < 80 else 0
                 terminated = {"eviteur": False, "chasseur": False}
                 dist_evit_obj_new = np.linalg.norm(self.pos_eviteur - self.pos_objectif)
                 dist_cha_evit_new = np.linalg.norm(self.pos_chasseur - self.pos_eviteur)
                 # print(self.pos_eviteur, self.pos_objectif, self.pos_chasseur)
                 # print(f"dist_evit_obj_new : {dist_evit_obj_new}, dist_cha_evit_new : {dist_cha_evit_new}")
-                rewards = {"eviteur": (dist_evit_obj_mem - dist_evit_obj_new)/10, "chasseur": (dist_cha_evit_mem - dist_cha_evit_new)/10}
+                rewards = {"eviteur": (dist_evit_obj_mem - dist_evit_obj_new)/10 - proche, "chasseur": (dist_cha_evit_mem - dist_cha_evit_new)/10}
        
         obs = self._get_obs()
         infos = {}

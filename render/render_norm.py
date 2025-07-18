@@ -18,12 +18,13 @@ env_single = AffrontementSingleAgent(env_raw, agent_id="eviteur")
 vec_env = DummyVecEnv([lambda: env_single])
 
 # Chargement de la normalisation (adaptée au vecteur d'environnement)
-env = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/models/V10_3_long_vecnormalize.pkl", vec_env)
+# env = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/models/V10_3_long_vecnormalize.pkl", vec_env)
+env = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/models/reward_test/V22_vecnormalize.pkl", vec_env)
 env.training = False    
 env.norm_reward = False
 
 # Chargement du modèle
-path_model = "C:/Users/FX643778/Documents/Git/Interception_marl/models/V10_3_long_entropy.zip"
+path_model = "C:/Users/FX643778/Documents/Git/Interception_marl/models/reward_test/V22_proche_2.zip"
 model = PPO.load(path_model, env=env)
 
 # Reset initial

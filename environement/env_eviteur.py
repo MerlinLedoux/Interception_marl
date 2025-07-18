@@ -1,6 +1,6 @@
 import gymnasium as gym
 import numpy as np
-from deplacement import chasseur_simple, chasseur_moyen, chasseur_moyen_2, chasseur_moyen_3
+from deplacement import chasseur_simple, chasseur_moyen, chasseur_moyen_2, chasseur_moyen_3, chasseur_hard
 
 class AffrontementSingleAgent(gym.Wrapper):
     def __init__(self, env, agent_id="eviteur"):
@@ -23,7 +23,7 @@ class AffrontementSingleAgent(gym.Wrapper):
 
         comportement = self.env.id % 100
         comportement = comportement // 25
-        comportement = 3
+        comportement = 4
         # print(comportement)
 
         match comportement:
@@ -35,6 +35,8 @@ class AffrontementSingleAgent(gym.Wrapper):
                 action_dict["chasseur"] = chasseur_moyen_2(self.env.pos_chasseur[0], self.env.pos_chasseur[1], self.env.traj_chasseur[1], self.env.traj_chasseur[0], self.env.pos_eviteur[0], self.env.pos_eviteur[1], self.env.traj_eviteur[1], self.env.traj_eviteur[0])
             case 3:
                 action_dict["chasseur"] = chasseur_moyen_3(self.env.pos_chasseur[0], self.env.pos_chasseur[1], self.env.traj_chasseur[1], self.env.traj_chasseur[0], self.env.pos_eviteur[0], self.env.pos_eviteur[1], self.env.traj_eviteur[1], self.env.traj_eviteur[0])
+            case 4:
+                action_dict["chasseur"] = chasseur_hard(self.env.pos_chasseur[0], self.env.pos_chasseur[1], self.env.traj_chasseur[1], self.env.traj_chasseur[0], self.env.pos_eviteur[0], self.env.pos_eviteur[1], self.env.traj_eviteur[1], self.env.traj_eviteur[0])
            
         action_dict[self.agent_id] = action
 

@@ -153,8 +153,10 @@ def chasseur_hard(xc, yc, capc, vitc, xe, ye, cape, vite):
         - Les composantes ax et ay représentent alors les directions vers lesquelles 
           le chasseur doit accélérer (avant et latéral) pour se diriger vers ce point.
     """
+    # print(xc, yc, capc, vitc, xe, ye, cape, vite)
     theta_e = np.radians(cape)
     theta_c = np.radians(capc)
+    
     dx = xe - xc
     dy = ye - yc
     d = np.array([dx, dy])
@@ -165,22 +167,43 @@ def chasseur_hard(xc, yc, capc, vitc, xe, ye, cape, vite):
     B = 2 * np.dot(d, v)
     C = np.dot(d, d)
 
-    delta = B**2 - 4*A*C
-    if delta < 0:
-        print("il y a un probleme, j'ai un delta négatif")
-        return None
+    interception_possible = True
 
-    t1 = (-B - np.sqrt(delta)) / (2*A)
-    t2 = (-B + np.sqrt(delta)) / (2*A)
-    t_candidates = [t for t in (t1, t2) if t > 0]
-    if not t_candidates:
-        return None
-    t = min(t_candidates)
+
+    if abs(A) < 1e-8:
+        if abs(B) < 1e-8:
+            interception_possible = False
+        else:
+            t = -C / B
+            if t <= 0:
+                interception_possible = False
+    else:
+        delta = B**2 - 4*A*C
+        
+        if delta >= 0:
+            t1 = (-B - np.sqrt(delta)) / (2*A)
+            t2 = (-B + np.sqrt(delta)) / (2*A)
+            print(t1, t2)
+            t_candidates = [t for t in (t1, t2) if t > 0]
+            if not t_candidates:
+                interception_possible = False
+            else :
+                t = min(t_candidates)
+
+        else : 
+            interception_possible = False
+
+    if interception_possible == False:
+        t = 10.0  # Valeur arbitraire
+        print("Pas d'interception : je vise la position future à t =", t)
+
 
     # Calcul du point d'interception visé
     xt = xe + v[0] * t
     yt = ye + v[1] * t 
-    target_vec = np.array([xt, yt]) # Vecteur du chasseur vers le point d’interception
+    target_vec = np.array([round(xt-xc,2), round(yt-yc,2)]) # Vecteur du chasseur vers le point d’interception
+    print(xt, yt)
+    print("tets")
 
     # Repère local du chasseur
     forward = np.array([np.cos(theta_c), np.sin(theta_c)])
@@ -196,29 +219,53 @@ def chasseur_hard(xc, yc, capc, vitc, xe, ye, cape, vite):
 #----------------Zone de test----------------#
 
 
-print("Test 1 : Même direction, éviteur droit devant")
-res1 = chasseur_hard(
-    xc=0, yc=0, capc=0, vitc=1.0,   # chasseur au centre, cap 0°
-    xe=10, ye=0, cape=180, vite=1.0 # éviteur droit devant à 10m, vient vers le chasseur
+# print("Test 1 : Même direction, éviteur droit devant")
+# res1 = chasseur_hard(
+#     xc=0, yc=0, capc=0, vitc=1.0,   # chasseur au centre, cap 0°
+#     xe=10, ye=0, cape=180, vite=1.0 # éviteur droit devant à 10m, vient vers le chasseur
+# )
+# print("Résultat :", res1)
+
+# # Cas 2 : éviteur qui fuit en diagonale, chasseur orienté vers le nord
+# print("\nTest 2 : Éviteur en fuite, diagonale")
+# res2 = chasseur_hard(
+#     xc=0, yc=0, capc=90, vitc=1.5,     # chasseur cap vers le nord
+#     xe=5, ye=5, cape=45, vite=1.0      # éviteur s'éloigne en diagonale (nord-est)
+# )
+# print("Résultat :", res2)
+
+# # Cas 3 :
+# print("\nTest 3 : ")
+# res3 = chasseur_hard(
+#     xc=10, yc=0, capc=0, vitc=1.5,    # chasseur cap 0°
+#     xe=0, ye=0, cape=45, vite=1.0     # éviteur devant, fuyant plus vite que chasseur
+# )
+# print("Résultat :", res3)
+
+# # Cas 4 : éviteur plus rapide que le chasseur — interception impossible
+# print("\nTest 4 : Éviteur plus rapide")
+# res3 = chasseur_hard(
+#     xc=0, yc=0, capc=0, vitc=1.0,    # chasseur cap 0°
+#     xe=5, ye=0, cape=0, vite=2.0     # éviteur devant, fuyant plus vite que chasseur
+# )
+# print("Résultat :", res3)
+
+
+# Cas 4 : éviteur plus rapide que le chasseur — interception impossible
+print("\nTest 4 : Comparaison hard / moyen")
+res_m = chasseur_moyen_3(
+    xc=800, yc=800, capc=225, vitc=10.0,    # chasseur cap 0°
+    xe=100, ye=100, cape=45, vite=10.0     # éviteur devant, fuyant plus vite que chasseur
 )
-print("Résultat :", res1)
-
-# Cas 2 : éviteur qui fuit en diagonale, chasseur orienté vers le nord
-print("\nTest 2 : Éviteur en fuite, diagonale")
-res2 = chasseur_hard(
-    xc=0, yc=0, capc=90, vitc=1.5,     # chasseur cap vers le nord
-    xe=5, ye=5, cape=45, vite=1.0      # éviteur s'éloigne en diagonale (nord-est)
+res_h = chasseur_hard(
+    xc=800, yc=800, capc=225, vitc=10.0,    # chasseur cap 0°
+    xe=100, ye=100, cape=45, vite=10.0     # éviteur devant, fuyant plus vite que chasseur
 )
-print("Résultat :", res2)
+print("Moyen :", res_m)
+print("Hard :", res_h)
 
-# Cas 3 : éviteur plus rapide que le chasseur — interception impossible
-print("\nTest 3 : Éviteur plus rapide")
-res3 = chasseur_hard(
-    xc=0, yc=0, capc=0, vitc=1.0,    # chasseur cap 0°
-    xe=5, ye=0, cape=0, vite=2.0     # éviteur devant, fuyant plus vite que chasseur
+
+res_v = chasseur_hard(
+    xc=750, yc=500, capc=0, vitc=10.0,    # chasseur cap 0°
+    xe=250, ye=250, cape=0, vite=10.0     # éviteur devant, fuyant plus vite que chasseur
 )
-print("Résultat :", res3)
-
-
-
-# Probleme a corriger pour demain

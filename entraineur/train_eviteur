@@ -15,16 +15,16 @@ from stable_baselines3.common.env_util import make_vec_env
 from env import Affrontement
 from env_eviteur import AffrontementSingleAgent
 
-save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models"
+save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models/reward_test"
 
 
 # Initialisation de wandb
 wandb.init(
     project="affrontement-ppo",
-    name="chasseur_entropy_3_long",
+    name="chasseur_proche_2",
     config={
         "policy_type": "MlpPolicy",
-        "total_timesteps": 5_000_000,
+        "total_timesteps": 2_000_000,
         "agent": "eviteur"
     },
     sync_tensorboard=True,
@@ -40,18 +40,22 @@ vec_env = DummyVecEnv([lambda: env_monitored])
 vec_env = VecNormalize(vec_env, norm_obs=True, norm_reward=True, clip_obs=10.)
 
 # PPO + wandb callback
-model = PPO("MlpPolicy", vec_env, verbose=1, tensorboard_log="./ppo_tensorboard", ent_coef=0.01)
+model = PPO("MlpPolicy", 
+            vec_env, 
+            verbose=1, 
+            tensorboard_log="./ppo_tensorboard", 
+            ent_coef=0.01)
 
 model.learn(
-    total_timesteps=5_000_000,
+    total_timesteps=2_000_000,
     callback=WandbCallback(
         gradient_save_freq=100,
         verbose=2
     )
 )
 
-save_path = os.path.join(save_dir, "V10_3_long_entropy")
+save_path = os.path.join(save_dir, "V22_proche_2")
 model.save(save_path)
-vec_env.save(os.path.join(save_dir, "V10_3_long_vecnormalize.pkl"))
+vec_env.save(os.path.join(save_dir, "V22_vecnormalize.pkl"))
 
 wandb.finish()
