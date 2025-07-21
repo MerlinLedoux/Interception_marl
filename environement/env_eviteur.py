@@ -3,12 +3,11 @@ import numpy as np
 from deplacement import chasseur_simple, chasseur_moyen, chasseur_moyen_2, chasseur_moyen_3, chasseur_hard
 
 class AffrontementSingleEviteur(gym.Wrapper):
-    def __init__(self, env, agent_id="eviteur"):
+    def __init__(self, env):
         super().__init__(env)
-        assert agent_id in ["eviteur", "chasseur"]
-        self.agent_id = agent_id
-        self.observation_space = env.observation_space[agent_id]
-        self.action_space = env.action_space[agent_id]
+        self.agent_id = "eviteur"
+        self.observation_space = env.observation_space[self.agent_id]
+        self.action_space = env.action_space[self.agent_id]
 
     def reset(self, **kwargs):
         obs, info = self.env.reset(**kwargs)
@@ -23,7 +22,7 @@ class AffrontementSingleEviteur(gym.Wrapper):
 
         comportement = self.env.id % 100
         comportement = comportement // 25
-        comportement = 4
+        # comportement = 4
         # print(comportement)
 
         match comportement:

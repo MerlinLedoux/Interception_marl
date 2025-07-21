@@ -12,7 +12,7 @@ from env_eviteur import AffrontementSingleEviteur
 
 # Création environnement de base
 env_raw = Affrontement()
-env_single = AffrontementSingleEviteur(env_raw, agent_id="eviteur")
+env_single = AffrontementSingleEviteur(env_raw)
 
 # Vectorisation de l'environnement (nécessaire pour VecNormalize)
 vec_env = DummyVecEnv([lambda: env_single])

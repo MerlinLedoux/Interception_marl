@@ -16,27 +16,27 @@ from env_eviteur import AffrontementSingleEviteur
 from env_chasseur import AffrontementSingleChasseur
 
 # === Paramètres ===
-save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models/chasseur"
+save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models/eviteur"
 os.makedirs(save_dir, exist_ok=True)
 
-total_timesteps = 5_000  
-run_name = "chasseur-1"
+total_timesteps = 100_000  
+run_name = "eviteur2"
 
 # === Initialisation wandb ===
-save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models/chasseur"
+save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models/eviteur"
 wandb.init(
-    project="affrontement-ppo-chasseur",
-    name="chasseur-1",
+    project="affrontement-ppo-eviteur",
+    name="eviteur-2",
     config={
         "policy_type": "MlpPolicy",
         "total_timesteps": total_timesteps,
-        "agent": "chasseur"
+        "agent": "eviteur"
     },
     sync_tensorboard=True,
 )
 
 env_raw = Affrontement()
-env_wrapped = AffrontementSingleChasseur(env_raw)
+env_wrapped = AffrontementSingleEviteur(env_raw)
 env_monitored = Monitor(env_wrapped)
 
 # Vectorisation + normalisation
@@ -45,7 +45,7 @@ vec_env = VecNormalize(vec_env, norm_obs=True, norm_reward=True, clip_obs=10.)
 
 # === Création de l'environnement ===
 base_env = Affrontement()
-wrapped_env = AffrontementSingleChasseur(base_env)
+wrapped_env = AffrontementSingleEviteur(base_env)
 monitored_env = Monitor(wrapped_env)
 
 vec_env = DummyVecEnv([lambda: monitored_env])
@@ -54,7 +54,7 @@ vec_env.training = True
 vec_env.norm_reward = True
 
 # === Environnement d’évaluation ===
-eval_env = DummyVecEnv([lambda: Monitor(AffrontementSingleChasseur(Affrontement()))])
+eval_env = DummyVecEnv([lambda: Monitor(AffrontementSingleEviteur(Affrontement()))])
 eval_env = VecNormalize(eval_env, norm_obs=True, norm_reward=False, clip_obs=10.)
 eval_env.training = False  # Important pour l'éval
 eval_env.norm_reward = False

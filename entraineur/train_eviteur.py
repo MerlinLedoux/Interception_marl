@@ -16,15 +16,15 @@ from env import Affrontement
 from env_eviteur import AffrontementSingleEviteur
 
 save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models/reward_test"
-
+total_timesteps = 1_000_000
 
 # Initialisation de wandb
 wandb.init(
     project="affrontement-ppo",
-    name="chasseur_proche_2",
+    name="chasseur_proche_3",
     config={
         "policy_type": "MlpPolicy",
-        "total_timesteps": 2_000_000,
+        "total_timesteps": total_timesteps,
         "agent": "eviteur"
     },
     sync_tensorboard=True,
@@ -32,7 +32,7 @@ wandb.init(
 
 # Environnement (avec Monitor pour wandb) 
 env_raw = Affrontement()    # Environement multi agent
-env_wrapped = AffrontementSingleEviteur(env_raw, agent_id="eviteur")  # Extraction d'un agent
+env_wrapped = AffrontementSingleEviteur(env_raw)  # Extraction d'un agent
 env_monitored = Monitor(env_wrapped)    # Enveloppe l'environement dans un wrapper de suivi (pour wandb)
 
 # Vectorisation + normalisation
@@ -47,15 +47,15 @@ model = PPO("MlpPolicy",
             ent_coef=0.01)
 
 model.learn(
-    total_timesteps=2_000_000,
+    total_timesteps=total_timesteps,
     callback=WandbCallback(
         gradient_save_freq=100,
         verbose=2
     )
 )
 
-save_path = os.path.join(save_dir, "V22_proche_2")
+save_path = os.path.join(save_dir, "V23_proche_2")
 model.save(save_path)
-vec_env.save(os.path.join(save_dir, "V22_vecnormalize.pkl"))
+vec_env.save(os.path.join(save_dir, "V23_vecnormalize.pkl"))
 
 wandb.finish()
