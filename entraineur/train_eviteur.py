@@ -13,7 +13,7 @@ from stable_baselines3.common.env_util import make_vec_env
 
 # J'ai en permanece deux warning ici mais le code fonctione trés bien
 from env import Affrontement
-from env_eviteur import AffrontementSingleAgent
+from env_eviteur import AffrontementSingleEviteur
 
 save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models/reward_test"
 
@@ -32,7 +32,7 @@ wandb.init(
 
 # Environnement (avec Monitor pour wandb) 
 env_raw = Affrontement()    # Environement multi agent
-env_wrapped = AffrontementSingleAgent(env_raw, agent_id="eviteur")  # Extraction d'un agent
+env_wrapped = AffrontementSingleEviteur(env_raw, agent_id="eviteur")  # Extraction d'un agent
 env_monitored = Monitor(env_wrapped)    # Enveloppe l'environement dans un wrapper de suivi (pour wandb)
 
 # Vectorisation + normalisation

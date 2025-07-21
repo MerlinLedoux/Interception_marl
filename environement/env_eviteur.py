@@ -2,7 +2,7 @@ import gymnasium as gym
 import numpy as np
 from deplacement import chasseur_simple, chasseur_moyen, chasseur_moyen_2, chasseur_moyen_3, chasseur_hard
 
-class AffrontementSingleAgent(gym.Wrapper):
+class AffrontementSingleEviteur(gym.Wrapper):
     def __init__(self, env, agent_id="eviteur"):
         super().__init__(env)
         assert agent_id in ["eviteur", "chasseur"]
@@ -48,3 +48,5 @@ class AffrontementSingleAgent(gym.Wrapper):
             truncated[self.agent_id],
             info.get(self.agent_id, {})
         )
+
+    

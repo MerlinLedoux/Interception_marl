@@ -195,15 +195,12 @@ def chasseur_hard(xc, yc, capc, vitc, xe, ye, cape, vite):
 
     if interception_possible == False:
         t = 10.0  # Valeur arbitraire
-        print("Pas d'interception : je vise la position future à t =", t)
-
+        # print("Pas d'interception : je vise la position future à t =", t)
 
     # Calcul du point d'interception visé
     xt = xe + v[0] * t
     yt = ye + v[1] * t 
     target_vec = np.array([round(xt-xc,2), round(yt-yc,2)]) # Vecteur du chasseur vers le point d’interception
-    print(xt, yt)
-    print("tets")
 
     # Repère local du chasseur
     forward = np.array([np.cos(theta_c), np.sin(theta_c)])
@@ -252,20 +249,20 @@ def chasseur_hard(xc, yc, capc, vitc, xe, ye, cape, vite):
 
 
 # Cas 4 : éviteur plus rapide que le chasseur — interception impossible
-print("\nTest 4 : Comparaison hard / moyen")
-res_m = chasseur_moyen_3(
-    xc=800, yc=800, capc=225, vitc=10.0,    # chasseur cap 0°
-    xe=100, ye=100, cape=45, vite=10.0     # éviteur devant, fuyant plus vite que chasseur
-)
-res_h = chasseur_hard(
-    xc=800, yc=800, capc=225, vitc=10.0,    # chasseur cap 0°
-    xe=100, ye=100, cape=45, vite=10.0     # éviteur devant, fuyant plus vite que chasseur
-)
-print("Moyen :", res_m)
-print("Hard :", res_h)
+# print("\nTest 4 : Comparaison hard / moyen")
+# res_m = chasseur_moyen_3(
+#     xc=800, yc=800, capc=225, vitc=10.0,    # chasseur cap 0°
+#     xe=100, ye=100, cape=45, vite=10.0     # éviteur devant, fuyant plus vite que chasseur
+# )
+# res_h = chasseur_hard(
+#     xc=800, yc=800, capc=225, vitc=10.0,    # chasseur cap 0°
+#     xe=100, ye=100, cape=45, vite=10.0     # éviteur devant, fuyant plus vite que chasseur
+# )
+# print("Moyen :", res_m)
+# print("Hard :", res_h)
 
 
-res_v = chasseur_hard(
-    xc=750, yc=500, capc=0, vitc=10.0,    # chasseur cap 0°
-    xe=250, ye=250, cape=0, vite=10.0     # éviteur devant, fuyant plus vite que chasseur
-)
+# res_v = chasseur_hard(
+#     xc=750, yc=500, capc=0, vitc=10.0,    # chasseur cap 0°
+#     xe=250, ye=250, cape=0, vite=10.0     # éviteur devant, fuyant plus vite que chasseur
+# )
