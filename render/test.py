@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 from env import Affrontement
-from env_eviteur import AffrontementSingleEviteur
+from env_eviteur_base import AffrontementSingleEviteur
 
 env_raw = Affrontement()
 env_eviteur = AffrontementSingleEviteur(env_raw)
@@ -42,10 +42,10 @@ env_raw.traj_chasseur = np.array([  8.,         281.13294597])
 
 # obs = np.array([[ -0.6461649, -5.6467795, 1.8473285, -0.8174245, 2.893185, 3.3805532, 0.35541624, -10]])
 
+obs = env._
+
 obs = env._get_obs()
-print(obs)
 action, _ = model.predict(obs, deterministic=True)
-print(action)
 
 ###=============Test et print=============###
 

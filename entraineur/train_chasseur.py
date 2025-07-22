@@ -12,21 +12,20 @@ from wandb.integration.sb3 import WandbCallback
 
 # J'ai en permanece deux warning ici mais le code fonctione trés bien
 from env import Affrontement
-from env_eviteur import AffrontementSingleEviteur
 from env_chasseur import AffrontementSingleChasseur
 
 # === Paramètres ===
 save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models/chasseur"
 os.makedirs(save_dir, exist_ok=True)
 
-total_timesteps = 5_000  
-run_name = "chasseur-1"
+total_timesteps = 250_000  
+run_name = "chasseur1"
 
 # === Initialisation wandb ===
 save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models/chasseur"
 wandb.init(
     project="affrontement-ppo-chasseur",
-    name="chasseur-1",
+    name="chasseur_1",
     config={
         "policy_type": "MlpPolicy",
         "total_timesteps": total_timesteps,
@@ -43,31 +42,6 @@ env_monitored = Monitor(env_wrapped)
 vec_env = DummyVecEnv([lambda: env_monitored])
 vec_env = VecNormalize(vec_env, norm_obs=True, norm_reward=True, clip_obs=10.)
 
-# === Création de l'environnement ===
-base_env = Affrontement()
-wrapped_env = AffrontementSingleChasseur(base_env)
-monitored_env = Monitor(wrapped_env)
-
-vec_env = DummyVecEnv([lambda: monitored_env])
-vec_env = VecNormalize(vec_env, norm_obs=True, norm_reward=True, clip_obs=10.)
-vec_env.training = True 
-vec_env.norm_reward = True
-
-# === Environnement d’évaluation ===
-eval_env = DummyVecEnv([lambda: Monitor(AffrontementSingleChasseur(Affrontement()))])
-eval_env = VecNormalize(eval_env, norm_obs=True, norm_reward=False, clip_obs=10.)
-eval_env.training = False  # Important pour l'éval
-eval_env.norm_reward = False
-
-# === Callback d’évaluation (optionnel mais utile) ===
-eval_callback = EvalCallback(
-    eval_env,
-    best_model_save_path=os.path.join(save_dir, "best"),
-    log_path=os.path.join(save_dir, "eval_logs"),
-    eval_freq=10_000,
-    deterministic=True,
-    render=False,
-)
 
 # === Création et entraînement du modèle PPO ===
 model = PPO(
@@ -80,10 +54,10 @@ model = PPO(
 
 model.learn(
     total_timesteps=total_timesteps,
-    callback=[
-        WandbCallback(gradient_save_freq=100, verbose=2),
-        eval_callback
-    ]
+    callback=WandbCallback(
+        gradient_save_freq=100, 
+        verbose=2
+    )
 )
 
 # === Sauvegarde du modèle final ===
