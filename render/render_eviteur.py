@@ -8,28 +8,31 @@ import matplotlib.pyplot as plt
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 from env import Affrontement
-from env_eviteur import AffrontementSingleEviteur2
+from env_eviteur import AffrontementSingleEviteur
+from policy_loader import load_chasseur_policy
 
-# Création environnement de base
+# === Chargement du modèle eviteur ===
+chasseur_model, chasseur_env = load_chasseur_policy()
+
+# === Environement de l'éviteur ===
 env_raw = Affrontement()
-env_single = AffrontementSingleEviteur2(env_raw)
+env_single = AffrontementSingleEviteur(
+    env_raw,
+    chasseur_model=chasseur_model,
+    chasseur_env=chasseur_env
+)
 
-# Vectorisation de l'environnement (nécessaire pour VecNormalize)
 vec_env = DummyVecEnv([lambda: env_single])
-
-# Chargement de la normalisation (adaptée au vecteur d'environnement)
-# env = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/models/V10_3_long_vecnormalize.pkl", vec_env)
-env = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/models/eviteur/eviteur2_vecnormalize.pkl", vec_env)
+env = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/models/eviteur/eviteur3_load_vecnormalize.pkl", vec_env)
 env.training = False   
 env.norm_reward = False
 
 # Chargement du modèle
-path_model = "C:/Users/FX643778/Documents/Git/Interception_marl/models/eviteur/eviteur2.zip"
+path_model = "C:/Users/FX643778/Documents/Git/Interception_marl/models/eviteur/eviteur3_load.zip"
 model = PPO.load(path_model, env=env)
 
 # Reset initial
 obs = env.reset()
-
 
 # Initialisation de l'affichage avec matplotlib
 plt.ion()

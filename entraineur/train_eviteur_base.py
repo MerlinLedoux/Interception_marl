@@ -13,15 +13,16 @@ from stable_baselines3.common.env_util import make_vec_env
 
 # J'ai en permanece deux warning ici mais le code fonctione trés bien
 from env import Affrontement
-from env_eviteur_base import AffrontementSingleEviteur
+from env_eviteur_base import AffrontementSingleEviteurBase
 
-save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models/reward_test"
-total_timesteps = 1_000_000
+save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models/base"
+run_name = "V23_base"
+total_timesteps = 100_000
 
 # Initialisation de wandb
 wandb.init(
     project="affrontement-ppo",
-    name="chasseur_proche_3",
+    name=run_name,
     config={
         "policy_type": "MlpPolicy",
         "total_timesteps": total_timesteps,
@@ -32,7 +33,7 @@ wandb.init(
 
 # Environnement (avec Monitor pour wandb) 
 env_raw = Affrontement()    # Environement multi agent
-env_wrapped = AffrontementSingleEviteur(env_raw)  # Extraction d'un agent
+env_wrapped = AffrontementSingleEviteurBase(env_raw)  # Extraction d'un agent
 env_monitored = Monitor(env_wrapped)    # Enveloppe l'environement dans un wrapper de suivi (pour wandb)
 
 # Vectorisation + normalisation
@@ -54,8 +55,7 @@ model.learn(
     )
 )
 
-save_path = os.path.join(save_dir, "V23_proche_2")
-model.save(save_path)
-vec_env.save(os.path.join(save_dir, "V23_vecnormalize.pkl"))
+model.save(os.path.join(save_dir, f"{run_name}"))
+vec_env.save(os.path.join(save_dir, f"{run_name}_vecnormalize.pkl"))
 
 wandb.finish()

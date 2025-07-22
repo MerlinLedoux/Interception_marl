@@ -183,7 +183,7 @@ def chasseur_hard(xc, yc, capc, vitc, xe, ye, cape, vite):
         if delta >= 0:
             t1 = (-B - np.sqrt(delta)) / (2*A)
             t2 = (-B + np.sqrt(delta)) / (2*A)
-            print(t1, t2)
+
             t_candidates = [t for t in (t1, t2) if t > 0]
             if not t_candidates:
                 interception_possible = False

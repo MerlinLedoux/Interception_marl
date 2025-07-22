@@ -7,10 +7,9 @@ import wandb
 from stable_baselines3 import PPO
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
-from stable_baselines3.common.callbacks import EvalCallback
 from wandb.integration.sb3 import WandbCallback
 
-# J'ai en permanece deux warning ici mais le code fonctione trés bien
+from policy_loader import load_chasseur_policy
 from env import Affrontement
 from env_eviteur import AffrontementSingleEviteur
 
@@ -19,13 +18,12 @@ save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models/eviteur"
 os.makedirs(save_dir, exist_ok=True)
 
 total_timesteps = 250_000  
-run_name = "eviteur2"
+run_name = "eviteur3_load"
 
 # === Initialisation wandb ===
-save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/models/eviteur"
 wandb.init(
-    project="affrontement-ppo-eviteur",
-    name="eviteur_2",
+    project="affrontement-eviteur",
+    name=run_name,
     config={
         "policy_type": "MlpPolicy",
         "total_timesteps": total_timesteps,
@@ -34,23 +32,35 @@ wandb.init(
     sync_tensorboard=True,
 )
 
+# === Chargement du modèle eviteur (fixe) ===
+chasseur_model, chasseur_env = load_chasseur_policy()
+
 env_raw = Affrontement()
-env_wrapped = AffrontementSingleEviteur(env_raw)
+env_wrapped = AffrontementSingleEviteur(
+    env_raw,
+    chasseur_model=chasseur_model,
+    chasseur_env=chasseur_env
+)
 env_monitored = Monitor(env_wrapped)
 
-
+# Vectorisation + normalisation
 vec_env = DummyVecEnv([lambda: env_monitored])
-vec_env = VecNormalize(vec_env, norm_obs=True, norm_reward=True, clip_obs=10.)
+
+# vec_env = VecNormalize(vec_env, norm_obs=True, norm_reward=True, clip_obs=10.)
+vec_env = VecNormalize.load("models/eviteur/eviteur_vecnormalize.pkl", vec_env)
+vec_env.training = True
+vec_env.norm_reward = True
 
 # === Création et entraînement du modèle PPO ===
-model = PPO(
-    "MlpPolicy",
-    vec_env,
-    verbose=1,
-    tensorboard_log="./ppo_tensorboard",
-    ent_coef=0.01
-)
+# model = PPO(
+#     "MlpPolicy",
+#     vec_env,
+#     verbose=1,
+#     tensorboard_log="./ppo_tensorboard",
+#     ent_coef=0.01
+# )
 
+model = PPO.load("models/eviteur/eviteur.zip", env=vec_env)
 model.learn(
     total_timesteps=total_timesteps,
     callback=WandbCallback(
