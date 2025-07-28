@@ -119,7 +119,7 @@ class DoubleChasseur(ParallelEnv):
 
 
         # Je suis en train de faire des test pour voir comment l'agent reagit si je cap la vitesst de l'eviteur plus bas
-        nxe, nye, nce, nve = deplacement.move(self.pos_eviteur[0], self.pos_eviteur[1], self.traj_eviteur[1], self.traj_eviteur[0], 0, 0, 12)
+        nxe, nye, nce, nve = deplacement.move(self.pos_eviteur[0], self.pos_eviteur[1], self.traj_eviteur[1], self.traj_eviteur[0], 1, 0, 8)
         nxc1, nyc1, ncc1, nvc1 = deplacement.move(self.pos_chasseurs[0][0], self.pos_chasseurs[0][1], self.traj_chasseurs[0][1], self.traj_chasseurs[0][0], actions["chasseur1"][0], actions["chasseur1"][1], 8)
         nxc2, nyc2, ncc2, nvc2 = deplacement.move(self.pos_chasseurs[1][0], self.pos_chasseurs[1][1], self.traj_chasseurs[1][1], self.traj_chasseurs[1][0], actions["chasseur2"][0], actions["chasseur2"][1], 8)
 

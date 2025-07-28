@@ -17,12 +17,12 @@ from env_chasseur import AffrontementSingleChasseur
 save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/chasseur"
 os.makedirs(save_dir, exist_ok=True)
 
-total_timesteps = 100_000  
-run_name = "chasseur_vs_blind_ev"
+total_timesteps = 250_000  
+run_name = "chasseur3_load"
 
 # === Initialisation wandb ===
 wandb.init(
-    project="affrontement-chasseur-test",
+    project="affrontement-chasseur",
     name=run_name,
     config={
         "policy_type": "MlpPolicy",
@@ -33,34 +33,26 @@ wandb.init(
 )
 
 # === Chargement du modèle eviteur (fixe) ===
-# eviteur_model, eviteur_env = load_eviteur_policy()
+eviteur_model, eviteur_env = load_eviteur_policy()
 
 env_raw = Affrontement()
 env_wrapped = AffrontementSingleChasseur(
     env_raw,
-    eviteur_model=None,
-    eviteur_env=None
+    eviteur_model=eviteur_model,
+    eviteur_env=eviteur_env
 )
 env_monitored = Monitor(env_wrapped)
 
 # Vectorisation + normalisation
 vec_env = DummyVecEnv([lambda: env_monitored])
 
-vec_env = VecNormalize(vec_env, norm_obs=True, norm_reward=True, clip_obs=10.)
-# vec_env = VecNormalize.load("models/chasseur/chasseur2_vecnormalize.pkl", vec_env)
+# vec_env = VecNormalize(vec_env, norm_obs=True, norm_reward=True, clip_obs=10.)
+vec_env = VecNormalize.load("models/chasseur/chasseur2_vecnormalize.pkl", vec_env)
 vec_env.training = True
 vec_env.norm_reward = True
 
-# === Création et entraînement du modèle PPO ===
-model = PPO(
-    "MlpPolicy",
-    vec_env,
-    verbose=1,
-    tensorboard_log="./ppo_tensorboard",
-    ent_coef=0.01
-)
 
-# model = PPO.load("models/chasseur/chasseur2.zip", env=vec_env)
+model = PPO.load("models/chasseur/chasseur2.zip", env=vec_env)
 model.learn(
     total_timesteps=total_timesteps,
     callback=WandbCallback(

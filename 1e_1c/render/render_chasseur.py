@@ -12,24 +12,24 @@ from env_chasseur import AffrontementSingleChasseur
 from policy_loader import load_eviteur_policy
 
 # === Chargement du modèle eviteur ===
-eviteur_model, eviteur_env = load_eviteur_policy()
+# eviteur_model, eviteur_env = load_eviteur_policy()
 
 # === Environement du chasseur ===
 
 env_raw = Affrontement()
 env_single = AffrontementSingleChasseur(
     env_raw,
-    eviteur_model=eviteur_model,
-    eviteur_env=eviteur_env
+    eviteur_model=None,
+    eviteur_env=None
 )
 
 vec_env = DummyVecEnv([lambda: env_single])
-env = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/alterner/run2/chasseur/chasseur3_al_2_vecnormalize.pkl", vec_env)
+env = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/chasseur/chasseur_vs_blind_ev_vecnormalize.pkl", vec_env)
 env.training = False   
 env.norm_reward = False
 
 # Chargement du modèle
-path_model = "C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/alterner/run2/chasseur/chasseur3_al_2.zip"
+path_model = "C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/chasseur/chasseur_vs_blind_ev.zip"
 model = PPO.load(path_model, env=env)
 
 # Reset initial

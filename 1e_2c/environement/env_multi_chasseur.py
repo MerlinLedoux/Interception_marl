@@ -20,7 +20,7 @@ class AffrontementSingleChasseur(gym.Wrapper):
         obs_dict = self.env._get_obs()
         obs_eviteur = obs_dict["eviteur"]
 
-        action_eviteur = [1,0]
+        action_eviteur = [0,0]
         if self.eviteur_model:
             obs_eviteur_norm = self.env_eviteur.normalize_obs(obs_eviteur)
             action_eviteur, _ = self.eviteur_model.predict(obs_eviteur_norm, deterministic=True)

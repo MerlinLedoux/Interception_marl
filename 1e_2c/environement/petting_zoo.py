@@ -1,20 +1,23 @@
-import gymnasium as gym
-from gymnasium import spaces
+import functools
+
+import gymnasium 
 import numpy as np 
+from gymnasium import spaces
+from gymnasium.utils import seeding
 import utils
 import deplacement
 
-class AffrontementMulti(gym.Env):
-    metadata = {"render_modes": ["human"], "render_fps": 10}
+from pettingzoo import ParallelEnv
+from pettingzoo.utils import AgentSelector, wrappers
 
-    def __init__(self, render_mode = None):
-        super().__init__()
-        self.render_mode = render_mode
-        self.max_step = 200
-        self.id = 0
-        self.nbr_chasseurs = 2
+class AffrontementMultiZoo(ParallelEnv):
+    metadata = {"render_modes": ["human"], "name": "eps_v2"}
 
-        self.observation_space = spaces.Dict({
+    def __init__(self, render_mode=None):
+        self.agents = ["eviteur", "chasseur1", "chasseur2"]
+        self.possible_agents = self.agents[:]
+
+        self.observation_spaces = {
             "eviteur" : spaces.Box(low=np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.float32),
                                         high=np.array([360, 10, 10, 360, 10, 360, 360, 10, 10, 360, 360, 10], dtype=np.float32),
                                         dtype=np.float32),
@@ -26,17 +29,21 @@ class AffrontementMulti(gym.Env):
             "chasseur2" : spaces.Box(low=np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.float32),
                                         high=np.array([360, 10, 10, 360, 360, 10, 10, 360, 360, 10], dtype=np.float32),
                                         dtype=np.float32)
-        })
-        
-        self.action_space = spaces.Dict({
+        }
+
+        self.action_spaces = {
             "eviteur" : spaces.Box(low=-1.0, high=1.0, shape=(2,), dtype=np.float32),
             "chasseur1" : spaces.Box(low=-1.0, high=1.0, shape=(2,), dtype=np.float32),
             "chasseur2" : spaces.Box(low=-1.0, high=1.0, shape=(2,), dtype=np.float32)
-        })
-        self.reset()
+        }
+
+        self.id = 0
+        self.nbr_chasseurs = 2
+        self.max_step = 200
+        self.render_mode = render_mode
 
     def reset(self, seed=None, options=None):
-        super().reset(seed=seed)
+        self.id += 1
         self.pos_objectif = np.random.uniform(600 , 1000, 2)
         self.pos_eviteur = np.random.uniform(0 , 200, 2)
         self.traj_eviteur = [5, utils.comp_cap(self.pos_eviteur, self.pos_objectif)]
@@ -55,7 +62,7 @@ class AffrontementMulti(gym.Env):
 
         obs = self._get_obs()
         return obs, {}
-
+    
     def _get_obs(self):
 
         # ========== Global ========== #
@@ -94,8 +101,7 @@ class AffrontementMulti(gym.Env):
 
 
         return {"eviteur": eviteur_obs, "chasseur1": chasseur_obs_1, "chasseur2": chasseur_obs_2}
-
-
+    
     def step(self, action_dict):
         self.current_step +=1
         # print(self.current_step)
@@ -129,17 +135,17 @@ class AffrontementMulti(gym.Env):
         if self.current_step >= self.max_step:
             truncated = {"eviteur": True, "chasseur1": True, "chasseur2": True}
             terminated = {"eviteur": False, "chasseur1": False, "chasseur2": False}
-            rewards = {"eviteur": -100, "chasseur1": 100, "chasseur2": 100}
+            rewards = {"eviteur": -10, "chasseur1": 10, "chasseur2": 10}
         else :
             truncated = {"eviteur": False, "chasseur1": False, "chasseur2": False}
             # Calcul des rewards
             if np.linalg.norm(self.pos_eviteur - self.pos_objectif) < 30:
                 terminated = {"eviteur": True, "chasseur1": True, "chasseur2": True}
-                rewards = {"eviteur": 100, "chasseur1": -100 - self.dist_min, "chasseur2": -100 - self.dist_min}
+                rewards = {"eviteur": 10, "chasseur1": -10 - self.dist_min, "chasseur2": -10 - self.dist_min}
 
             elif (np.linalg.norm(self.pos_chasseurs[0] - self.pos_eviteur) < 30 or np.linalg.norm(self.pos_chasseurs[1] - self.pos_eviteur) < 30):
                 terminated = {"eviteur": True, "chasseur1": True, "chasseur2": True}
-                rewards = {"eviteur": -100, "chasseur1": 100, "chasseur2": 100}
+                rewards = {"eviteur": -10, "chasseur1": 10, "chasseur2": 10}
 
             else:
                 proche = np.linalg.norm(self.pos_chasseurs[0] - self.pos_eviteur) < 80 or np.linalg.norm(self.pos_chasseurs[1] - self.pos_eviteur) < 80
@@ -149,12 +155,11 @@ class AffrontementMulti(gym.Env):
                 rewards = {"eviteur": (dist_evit_obj_mem - dist_evit_obj_new)/10 - pen_pro - 0.2, "chasseur1": 0, "chasseur2": 0}
        
         obs = self._get_obs()
-        infos = {}
+        infos = {agent: {} for agent in self.agents}
         return obs, rewards, terminated, truncated, infos
     
-
     def render(self):
-        pass
+        print(f"[STEP {self.current_step}] Pos eviteur: {self.pos_eviteur}, chasseurs: {self.pos_chasseurs}")
 
     def init_chasseur(self):
         while True:
@@ -162,3 +167,6 @@ class AffrontementMulti(gym.Env):
             if pos[0] > 600 or pos[1] > 600:
                 break
         return pos
+    
+    def close(self):
+        pass
