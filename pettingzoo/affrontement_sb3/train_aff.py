@@ -7,8 +7,8 @@ import wandb
 from wandb.integration.sb3 import WandbCallback
 
 # === Prametres ===
-total_timesteps = 1_000_000
-run_name = "norm_rew7"
+total_timesteps = 20_000_000
+run_name = "norm_rew2"
 
 env = DoubleChasseur()
 env = ss.pettingzoo_env_to_vec_env_v1(env)

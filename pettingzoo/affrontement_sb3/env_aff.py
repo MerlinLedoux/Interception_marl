@@ -1,3 +1,5 @@
+import functools
+
 from pettingzoo import ParallelEnv 
 from gymnasium import spaces 
 import numpy as np
@@ -13,33 +15,17 @@ class DoubleChasseur(ParallelEnv):
         self.possible_agents = self.agents[:]
 
         self.observation_spaces = {
-            # "chasseur1" : spaces.Box(low=np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.float32),
-            #                             high=np.array([360, 10, 10, 360, 360, 10, 10, 360, 360, 10], dtype=np.float32),
-            #                             dtype=np.float32),
-
-            # "chasseur2" : spaces.Box(low=np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.float32),
-            #                             high=np.array([360, 10, 10, 360, 360, 10, 10, 360, 360, 10], dtype=np.float32),
-            #                             dtype=np.float32)
-
-            "chasseur1" : spaces.Box(low=np.array([-1, -1, -1, -1, -1, -1, -1, -1, -1, -1], dtype=np.float32),
-                                        high=np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], dtype=np.float32),
-                                        dtype=np.float32),
-
-            "chasseur2" : spaces.Box(low=np.array([-1, -1, -1, -1, -1, -1, -1, -1, -1, -1], dtype=np.float32),
-                                        high=np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], dtype=np.float32),
-                                        dtype=np.float32)
+            agent: spaces.Box(low=-1.0, high=1.0, shape=(10,), dtype=np.float32) for agent in self.agents
         }
 
         self.action_spaces = {
-            "chasseur1" : spaces.Box(low=-1.0, high=1.0, shape=(2,), dtype=np.float32),
-            "chasseur2" : spaces.Box(low=-1.0, high=1.0, shape=(2,), dtype=np.float32)
+            agent: spaces.Box(low=-1.0, high=1.0, shape=(2,), dtype=np.float32) for agent in self.agents    
         }
 
         self.id = 0
         self.max_step = 200
         self.render_mode = render_mode
         self.render_initialized = False
-
 
     def reset(self, seed=None, options=None):
         self.id += 1 
@@ -200,3 +186,6 @@ class DoubleChasseur(ParallelEnv):
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
         plt.pause(0.05)
+
+    def close(self):
+        print("Fermeture de l'environnement")
