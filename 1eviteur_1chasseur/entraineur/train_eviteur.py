@@ -1,7 +1,7 @@
 import os
 import sys
 
-sys.path.append(os.path.abspath(r"C:\Users\FX643778\Documents\Git\Interception_marl\1e_1c\environement"))
+sys.path.append(os.path.abspath(r"C:\Users\FX643778\Documents\Git\Interception_marl\1eviteur_1chasseur\environement"))
 
 import wandb
 from stable_baselines3 import PPO
@@ -14,7 +14,7 @@ from env import Affrontement
 from env_eviteur import AffrontementSingleEviteur
 
 # === Paramètres ===
-save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/eviteur"
+save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/1eviteur_1chasseur/models/eviteur"
 os.makedirs(save_dir, exist_ok=True)
 
 total_timesteps = 250_000  

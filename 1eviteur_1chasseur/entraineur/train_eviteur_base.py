@@ -15,7 +15,7 @@ from stable_baselines3.common.env_util import make_vec_env
 from env import Affrontement
 from env_eviteur_base import AffrontementSingleEviteurBase
 
-save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/base"
+save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/1eviteur_1chasseur/models/base"
 run_name = "V23_base"
 total_timesteps = 100_000
 

@@ -16,7 +16,7 @@ from env_chasseur import AffrontementSingleChasseur
 # === Configuration de l'entraînement ===
 total_timesteps = 250_000
 run_name = "chasseur_entrainement"
-save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/chasseur"
+save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/1eviteur_1chasseur/models/chasseur"
 os.makedirs(save_dir, exist_ok=True)
 
 # === Initialisation wandb ===

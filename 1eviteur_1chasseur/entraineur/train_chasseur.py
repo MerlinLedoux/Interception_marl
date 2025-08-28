@@ -14,7 +14,7 @@ from env import Affrontement
 from env_chasseur import AffrontementSingleChasseur
 
 # === Paramètres ===
-save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/chasseur"
+save_dir = "C:/Users/FX643778/Documents/Git/Interception_marl/1eviteur_1chasseur/models/chasseur"
 os.makedirs(save_dir, exist_ok=True)
 
 total_timesteps = 100_000  

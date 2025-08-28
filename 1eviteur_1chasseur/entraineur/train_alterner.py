@@ -20,9 +20,9 @@ train_timesteps = 250_000
 loop = 3
 run_number = 2
 
-save_dir = f"C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/alterner/run{run_number}"
-save_dir_cha = f"C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/alterner/run{run_number}/chasseur"
-save_dir_evi = f"C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/alterner/run{run_number}/eviteur"
+save_dir = f"C:/Users/FX643778/Documents/Git/Interception_marl/1eviteur_1chasseur/models/alterner/run{run_number}"
+save_dir_cha = f"C:/Users/FX643778/Documents/Git/Interception_marl/1eviteur_1chasseur/models/alterner/run{run_number}/chasseur"
+save_dir_evi = f"C:/Users/FX643778/Documents/Git/Interception_marl/1eviteur_1chasseur/models/alterner/run{run_number}/eviteur"
 os.makedirs(save_dir, exist_ok=True)
 os.makedirs(save_dir_cha, exist_ok=True)
 os.makedirs(save_dir_evi, exist_ok=True)
@@ -44,8 +44,8 @@ for k in range(1, loop+1):
         sync_tensorboard=True,
     )    
 
-    path_norm_eviteur = f"C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/alterner/run{run_number}/eviteur/eviteur{k-1}_al_{run_number}_vecnormalize.pkl"
-    path_model_eviteur = f"C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/alterner/run{run_number}/eviteur/eviteur{k-1}_al_{run_number}.zip"
+    path_norm_eviteur = f"C:/Users/FX643778/Documents/Git/Interception_marl/1eviteur_1chasseur/models/alterner/run{run_number}/eviteur/eviteur{k-1}_al_{run_number}_vecnormalize.pkl"
+    path_model_eviteur = f"C:/Users/FX643778/Documents/Git/Interception_marl/1eviteur_1chasseur/models/alterner/run{run_number}/eviteur/eviteur{k-1}_al_{run_number}.zip"
 
     eviteur_model, eviteur_env = load_eviteur_policy_bis(path_norm=path_norm_eviteur, path_model=path_model_eviteur)
     env_raw = Affrontement()

@@ -1,7 +1,7 @@
 import os
 import sys
 
-sys.path.append(os.path.abspath(r"C:\Users\FX643778\Documents\Git\Interception_marl\1e_1c\environement"))
+sys.path.append(os.path.abspath(r"C:\Users\FX643778\Documents\Git\Interception_marl\1eviteur_1chasseur\environement"))
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,7 +12,7 @@ from env_chasseur import AffrontementSingleChasseur
 from policy_loader import load_eviteur_policy
 
 # === Chargement du modèle eviteur ===
-# eviteur_model, eviteur_env = load_eviteur_policy()
+eviteur_model, eviteur_env = load_eviteur_policy()
 
 # === Environement du chasseur ===
 
@@ -24,12 +24,12 @@ env_single = AffrontementSingleChasseur(
 )
 
 vec_env = DummyVecEnv([lambda: env_single])
-env = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/chasseur/chasseur_vs_blind_ev_vecnormalize.pkl", vec_env)
+env = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/1eviteur_1chasseur/models/chasseur/chasseur_vs_blind_ev_vecnormalize.pkl", vec_env)
 env.training = False   
 env.norm_reward = False
 
 # Chargement du modèle
-path_model = "C:/Users/FX643778/Documents/Git/Interception_marl/1e_1c/models/chasseur/chasseur_vs_blind_ev.zip"
+path_model = "C:/Users/FX643778/Documents/Git/Interception_marl/1eviteur_1chasseur/models/chasseur/chasseur_vs_blind_ev.zip"
 model = PPO.load(path_model, env=env)
 
 # Reset initial

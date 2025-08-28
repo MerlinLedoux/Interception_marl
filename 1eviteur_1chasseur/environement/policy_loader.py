@@ -8,10 +8,10 @@ def load_chasseur_policy():
     env_raw = Affrontement()
     env_chasseur = AffrontementSingleChasseur(env_raw)
     vec_env = DummyVecEnv([lambda: env_chasseur])
-    env_norm = VecNormalize.load("models/chasseur/chasseur_vecnormalize.pkl", vec_env)
+    env_norm = VecNormalize.load("chemin/vers/le/fichier/models/chasseur/chasseur_vecnormalize.pkl", vec_env)
     env_norm.training = False
     env_norm.norm_reward = False
-    model = PPO.load("models/chasseur/chasseur.zip", env=env_norm)
+    model = PPO.load("chemin/vers/le/fichier/models/chasseur/chasseur.zip", env=env_norm)
     return model, env_norm
 
 def load_eviteur_policy():
@@ -20,11 +20,13 @@ def load_eviteur_policy():
     env_eviteur = AffrontementSingleEviteur(env_raw)
     vec_env = DummyVecEnv([lambda: env_eviteur])
     # env_norm = VecNormalize.load("models/base/V22_vecnormalize.pkl", vec_env)
-    env_norm = VecNormalize.load("models/alterner/run2/eviteur/eviteur3_al_2_vecnormalize.pkl", vec_env)
+    # env_norm = VecNormalize.load("models/alterner/run2/eviteur/eviteur3_al_2_vecnormalize.pkl", vec_env)
+    env_norm = VecNormalize.load("C:/Users/FX643778/Documents/Git/Interception_marl/1eviteur_1chasseur/models/alterner/run2/eviteur/eviteur3_al_2_vecnormalize.pkl", vec_env)     
     env_norm.training = False
     env_norm.norm_reward = False
     # model = PPO.load("models/base/V22_proche_2.zip", env=env_norm)
-    model = PPO.load("models/alterner/run2/eviteur/eviteur3_al_2.zip", env=env_norm)
+    # model = PPO.load("models/alterner/run2/eviteur/eviteur3_al_2.zip", env=env_norm)
+    model = PPO.load("C:/Users/FX643778/Documents/Git/Interception_marl/1eviteur_1chasseur/models/alterner/run2/eviteur/eviteur3_al_2.zip", env=env_norm)
     return model, env_norm
 
 # Version bis des deux fonctions avec l'emplacement des fichier en parametres

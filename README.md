@@ -1,0 +1,1 @@
+J'ai dans ce docier mes codes sur les systeme multi agents. J'ai tester de faire s'affronter plusieur agents. J'ai des note book sur pytorch et vmas de cours que j'ai regardai pour comprendre comment ça fonctione. 
